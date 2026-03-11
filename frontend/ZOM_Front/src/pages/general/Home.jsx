@@ -34,18 +34,16 @@ function Home() {
       Array.from(children).forEach((child) => observer.observe(child));
     }
 
-    return () => {
-      if (children) {
-        Array.from(children).forEach((child) => observer.unobserve(child));
-      }
-    };
-  }, []);
+    return () => observer.disconnect();
+  }, [videos]);
 
-  useEffect(async() => {
-    const res= await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/food`,{
-      withCredentials:true
-    });
-    setVideos(res.data.fooditems);
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/food`, {
+      withCredentials: true
+    })
+      .then((res) => {
+        setVideos(res.data.fooditems);
+      });
   }, []);
 
   return (
