@@ -13,8 +13,10 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 const authRoute=require('./routes/authroutes');
 const foodRoute=require('./routes/foodroutes');
+const foodPartnerRoute=require('./routes/food-partner-routes');
 
 app.use("/api/auth",authRoute);
 app.use("/api/food",foodRoute);
+app.use("/api/food-partner",foodPartnerRoute);
 
 module.exports=app;

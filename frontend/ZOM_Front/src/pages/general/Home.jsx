@@ -8,6 +8,8 @@ function Home() {
   const containerRef = useRef(null);
   const videoRefs = useRef([]);
   const [videos, setVideos] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,9 +44,51 @@ function Home() {
       withCredentials: true
     })
       .then((res) => {
-        setVideos(res.data.fooditems);
+        setVideos(res.data.fooditems || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching videos:", err);
+        setError("Please login to view food videos.");
+        setLoading(false);
       });
   }, []);
+
+  if (loading) {
+    return (
+      <div className="h-screen w-full bg-black flex items-center justify-center text-white">
+        <p className="text-xl animate-pulse">Loading tasty bites...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-screen w-full bg-black flex flex-col items-center justify-center text-white p-6">
+        <div className="bg-white/10 p-8 rounded-2xl backdrop-blur-md max-w-md w-full text-center border border-white/20">
+          <div className="text-4xl mb-4">🍔</div>
+          <h2 className="text-2xl font-bold mb-2">Welcome to Zomato</h2>
+          <p className="text-gray-300 mb-8">{error}</p>
+          <div className="flex flex-col gap-4">
+            <Link to="/user/login" className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-semibold transition shadow-lg shadow-red-600/30">
+              User Login
+            </Link>
+            <Link to="/food-partner/login" className="bg-transparent border border-white/30 hover:bg-white/10 text-white px-8 py-3 rounded-full font-semibold transition">
+              Partner Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (videos.length === 0) {
+    return (
+      <div className="h-screen w-full bg-black flex flex-col items-center justify-center text-white gap-4">
+        <p className="text-xl px-4 text-center">No tasty videos found. Check back later!</p>
+      </div>
+    );
+  }
 
   return (
     <div
