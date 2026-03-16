@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Createfood() {
   const navigate = useNavigate();
@@ -35,10 +36,18 @@ function Createfood() {
     if (fileInput) fileInput.value = '';
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // API submission logic goes here
-    console.log("Submitting food item:", formData);
+    const formDatatosend=new FormData();
+    formDatatosend.append("name",formData.name);
+    formDatatosend.append("description",formData.description);
+    formDatatosend.append("video",formData.video);
+    
+    const response= await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/food`, formDatatosend,{
+      withCredentials:true,
+    })
+    console.log(response.data);
+    navigate('/');
   };
 
   return (
