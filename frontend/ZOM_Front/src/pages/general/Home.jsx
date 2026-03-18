@@ -10,7 +10,21 @@ function Home() {
   const [videos, setVideos] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(null);
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/logout`, { withCredentials: true }).catch(() => {});
+      await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/food-partner/logout`, { withCredentials: true }).catch(() => {});
+      navigate('/user/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      navigate('/user/login');
+    }
+  };
+
+
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -102,6 +116,25 @@ function Home() {
           data-index={index}
           className="relative w-full h-screen snap-start snap-always flex items-center justify-center overflow-hidden"
         >
+          {/* Top Right Options Menu */}
+          <div className="absolute top-6 right-4 z-10 flex flex-col items-end">
+            <button
+               onClick={() => setMenuOpen(vid._id === menuOpen ? null : vid._id)}
+               className="w-10 h-10 bg-black/40 rounded-full flex items-center justify-center backdrop-blur-sm text-white hover:bg-black/60 transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+              </svg>
+            </button>
+            {menuOpen === vid._id && (
+               <div className="mt-2 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl overflow-hidden min-w-[120px]">
+                  <button onClick={handleLogout} className="w-full text-left px-4 py-3 text-red-500 hover:bg-zinc-800 transition font-medium text-sm">
+                    Logout
+                  </button>
+               </div>
+            )}
+          </div>
+
           {/* Video Player */}
           <video
             ref={(el) => (videoRefs.current[index] = el)}
@@ -131,21 +164,7 @@ function Home() {
               </Link>
             </div>
 
-            {/* Placeholder for side actions (like, share, etc.) typical in Reels UI */}
-            <div className="flex flex-col gap-6 text-white pb-4">
-              <div className="flex flex-col items-center gap-1">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">💖</div>
-                <span className="text-xs">12.4k</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">💬</div>
-                <span className="text-xs">456</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">↗️</div>
-                <span className="text-xs">Share</span>
-              </div>
-            </div>
+
           </div>
         </div>
       ))}
